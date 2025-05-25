@@ -4,38 +4,42 @@ const LoadingScreen: React.FC = () => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const handleLoad = () => {
+    const handleFadeOut = () => {
       setFadeOut(true);
       setTimeout(() => {
         const loader = document.getElementById('loader-react');
         if (loader) loader.remove();
-      }, 2000); // matches fade-out duration
+      }, 2000); // Match fade-out timing
     };
 
-    window.addEventListener('load', handleLoad);
-    return () => window.removeEventListener('load', handleLoad);
+    if (document.readyState === 'complete') {
+      handleFadeOut();
+    } else {
+      window.addEventListener('load', handleFadeOut);
+      return () => window.removeEventListener('load', handleFadeOut);
+    }
   }, []);
 
   return (
     <div
       id="loader-react"
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-[1700ms] ease-in-out ${
+      className={`fixed inset-0 z-[9999] flex flex-col justify-center items-center transition-opacity duration-[1700ms] ease-in-out ${
         fadeOut ? 'opacity-0 invisible' : 'opacity-100 visible'
       }`}
       style={{
         background: 'radial-gradient(circle at center, #1e3a8a 0%, #0f172a 100%)',
+        animation: 'fadeIn 0.3s ease-in-out forwards',
       }}
     >
-       <div className="logo-ring mb-8 flex items-center justify-center">
+      <div className="logo-ring mb-8 flex justify-center items-center">
         <img
           src="/src/logo.png"
           alt="The Florence School Logo"
-          className="w-[180px] max-h-[180px] object-contain"
+          className="w-[180px] h-[180px] object-contain drop-shadow-xl"
         />
-      </div> 
-
+      </div>
       <h1
-        className="text-2xl font-bold text-white tracking-wide mb-1"
+        className="text-white text-2xl font-bold tracking-wide mb-1"
         style={{
           opacity: 0,
           animation: 'fadeSlide 1s ease-out 0.3s forwards',
@@ -44,7 +48,7 @@ const LoadingScreen: React.FC = () => {
         The Florence School
       </h1>
       <p
-        className="text-base text-slate-300"
+        className="text-slate-300 text-base"
         style={{
           opacity: 0,
           animation: 'fadeSlide 1s ease-out 0.5s forwards',
@@ -53,28 +57,31 @@ const LoadingScreen: React.FC = () => {
         Empowering Future Minds
       </p>
 
-      <style>
-        {`
-          @keyframes fadeSlide {
-            from {
-              transform: translateY(10px);
-              opacity: 0;
-            }
-            to {
-              transform: translateY(0);
-              opacity: 1;
-            }
-          }
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
 
-          .logo-ring img {
-            width: 180px;
-            height: auto;
-            max-height: 180px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+        @keyframes fadeSlide {
+          from {
+            transform: translateY(10px);
+            opacity: 0;
           }
-        `}
-      </style>
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .logo-ring img {
+          filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+        }
+
+        body, html {
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
 };
